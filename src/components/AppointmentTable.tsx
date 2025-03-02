@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Appointment } from '../hooks/useDashboard';
-import { Search, Filter, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, Filter, X, ChevronDown, ChevronUp, FileText } from 'lucide-react';
 
 interface AppointmentFilters {
   status: string;
@@ -35,6 +35,19 @@ const AppointmentTable: React.FC<AppointmentTableProps> = ({
 }) => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [expandedNotes, setExpandedNotes] = useState<string | null>(null);
+
+  const toggleNotes = (id: string) => {
+    setExpandedNotes(expandedNotes === id ? null : id);
+  };
+
+  if (loading) {
+    return <div className="flex justify-center items-center h-64">Carregando...</div>;
+  }
+
+  if (error) {
+    return <div className="text-red-600">Erro: {error}</div>;
+  }
 
   const clearFilters = () => {
     updateFilters({
@@ -276,70 +289,77 @@ const AppointmentTable: React.FC<AppointmentTableProps> = ({
       ) : (
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white rounded-lg overflow-hidden shadow-md">
-            <thead className="bg-blue-900 text-white">
-              <tr>
-                <th className="py-3 px-4 text-left">Cliente</th>
-                <th className="py-3 px-4 text-left">Telefone</th>
-                <th className="py-3 px-4 text-left">Veículo</th>
-                <th className="py-3 px-4 text-left">Serviço</th>
-                <th className="py-3 px-4 text-left">Data</th>
-                <th className="py-3 px-4 text-left">Horário</th>
-                <th className="py-3 px-4 text-left">Preço</th>
-                <th className="py-3 px-4 text-left">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {appointments.map((appointment) => (
-                <tr key={appointment.id} className="hover:bg-gray-50">
-                  <td className="py-3 px-4 font-medium">{appointment.clientName}</td>
-                  <td className="py-3 px-4">{appointment.phone}</td>
-                  <td className="py-3 px-4">{appointment.vehicle}</td>
-                  <td className="py-3 px-4">{appointment.service}</td>
-                  <td className="py-3 px-4">
-                    {new Date(appointment.date).toLocaleDateString('pt-BR')}
-                  </td>
-                  <td className="py-3 px-4">{appointment.time}</td>
-                  <td className="py-3 px-4">
-                    R$ {(appointment.price ?? 0).toFixed(2)}
-                  </td>
-                  <td className="py-3 px-4">
-                    {editingId === appointment.id ? (
-                      <select
-                        defaultValue={appointment.status}
-                        onChange={async (e) => {
-                          const newStatus = e.target.value;
-                          if (newStatus && newStatus !== appointment.status) {
-                            await updateAppointmentStatus(appointment.id, newStatus);
-                          }
-                          setEditingId(null);
-                        }}
-                        onBlur={() => setEditingId(null)}
-                        className="rounded-md border border-gray-300 py-1 px-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                      >
-                        <option value="Pendente">Pendente</option>
-                        <option value="Confirmado">Confirmado</option>
-                        <option value="Cancelado">Cancelado</option>
-                      </select>
-                    ) : (
-                      <button onClick={() => setEditingId(appointment.id)}>
-                        <span 
-                          className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${
-                            appointment.status === 'Confirmado'
-                              ? 'bg-green-100 text-green-800'
-                              : appointment.status === 'Cancelado'
-                              ? 'bg-red-100 text-red-800'
-                              : 'bg-yellow-100 text-yellow-800'
-                          }`}
-                        >
-                          {appointment.status}
-                        </span>
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <thead className="bg-blue-900 text-white">
+          <tr>
+            <th className="py-3 px-4 text-left">Cliente</th>
+            <th className="py-3 px-4 text-left">Telefone</th>
+            <th className="py-3 px-4 text-left">Veículo</th>
+            <th className="py-3 px-4 text-left">Serviço</th>
+            <th className="py-3 px-4 text-left">Data</th>
+            <th className="py-3 px-4 text-left">Horário</th>
+            <th className="py-3 px-4 text-left">Preço</th>
+            <th className="py-3 px-4 text-left">Status</th>
+            <th className="py-3 px-4 text-left">Observações</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-200">
+          {appointments.map((appointment) => (
+            <tr key={appointment.id} className="hover:bg-gray-50">
+              <td className="py-3 px-4 font-medium">{appointment.clientName}</td>
+              <td className="py-3 px-4">{appointment.phone}</td>
+              <td className="py-3 px-4">{appointment.vehicle}</td>
+              <td className="py-3 px-4">{appointment.service}</td>
+              <td className="py-3 px-4">{new Date(appointment.date).toLocaleDateString('pt-BR')}</td>
+              <td className="py-3 px-4">{appointment.time}</td>
+              <td className="py-3 px-4">R$ {(appointment.price ?? 0).toFixed(2)}</td>
+              <td className="py-3 px-4">
+                {editingId === appointment.id ? (
+                  <select
+                    defaultValue={appointment.status}
+                    onChange={async (e) => {
+                      const newStatus = e.target.value;
+                      if (newStatus !== appointment.status) {
+                        await updateAppointmentStatus(appointment.id, newStatus);
+                      }
+                      setEditingId(null);
+                    }}
+                    onBlur={() => setEditingId(null)}
+                    className="rounded-md border border-gray-300 py-1 px-2"
+                  >
+                    <option value="Pendente">Pendente</option>
+                    <option value="Confirmado">Confirmado</option>
+                    <option value="Cancelado">Cancelado</option>
+                  </select>
+                ) : (
+                  <button onClick={() => setEditingId(appointment.id)}>
+                    <span className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${
+                      appointment.status === 'Confirmado' ? 'bg-green-100 text-green-800' :
+                      appointment.status === 'Cancelado' ? 'bg-red-100 text-red-800' :
+                      'bg-yellow-100 text-yellow-800'
+                    }`}>
+                      {appointment.status}
+                    </span>
+                  </button>
+                )}
+              </td>
+              <td className="py-3 px-4">
+                {appointment.notes ? (
+                  <button onClick={() => toggleNotes(appointment.id)} className="text-blue-600 hover:underline flex items-center">
+                    <FileText size={16} className="mr-1" /> {expandedNotes === appointment.id ? 'Ocultar' : 'Ver'}
+                  </button>
+                ) : (
+                  '-'
+                )}
+                {expandedNotes === appointment.id && (
+                  <div className="mt-2 p-2 border border-gray-300 rounded-md bg-gray-50">
+                    {appointment.notes}
+                  </div>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
         </div>
       )}
     </div>
