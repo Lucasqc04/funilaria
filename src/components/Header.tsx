@@ -1,12 +1,12 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Car, User, Calendar } from 'lucide-react';
-import { useAuth } from '../hooks/useAuth';
+import { Menu, X, Car,  Calendar } from 'lucide-react';
+ 
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const location = useLocation();
-  const { user, logout } = useAuth();
+ 
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -16,10 +16,7 @@ const Header: React.FC = () => {
     setIsMenuOpen(false);
   };
 
-  const handleLogout = async () => {
-    await logout();
-    closeMenu();
-  };
+  
 
   return (
     <header className="bg-blue-900 text-white shadow-md">
@@ -47,30 +44,7 @@ const Header: React.FC = () => {
                 Agendar Serviço
               </span>
             </Link>
-            {user ? (
-              <>
-                <Link 
-                  to="/dashboard" 
-                  className={`hover:text-blue-300 transition-colors ${location.pathname === '/dashboard' ? 'font-bold' : ''}`}
-                >
-                  Dashboard
-                </Link>
-                <button 
-                  onClick={handleLogout}
-                  className="bg-blue-700 hover:bg-blue-800 px-4 py-2 rounded-md transition-colors"
-                >
-                  Sair
-                </button>
-              </>
-            ) : (
-              <Link 
-                to="/login" 
-                className="flex items-center space-x-1 bg-blue-700 hover:bg-blue-800 px-4 py-2 rounded-md transition-colors"
-              >
-                <User size={18} />
-                <span>Área Restrita</span>
-              </Link>
-            )}
+        
           </nav>
 
           {/* Mobile Menu Button */}
@@ -99,32 +73,6 @@ const Header: React.FC = () => {
                 Agendar Serviço
               </span>
             </Link>
-            {user ? (
-              <>
-                <Link 
-                  to="/dashboard" 
-                  className={`hover:text-blue-300 transition-colors ${location.pathname === '/dashboard' ? 'font-bold' : ''}`}
-                  onClick={closeMenu}
-                >
-                  Dashboard
-                </Link>
-                <button 
-                  onClick={handleLogout}
-                  className="bg-blue-700 hover:bg-blue-800 px-4 py-2 rounded-md transition-colors text-left"
-                >
-                  Sair
-                </button>
-              </>
-            ) : (
-              <Link 
-                to="/login" 
-                className="flex items-center space-x-1 bg-blue-700 hover:bg-blue-800 px-4 py-2 rounded-md transition-colors w-fit"
-                onClick={closeMenu}
-              >
-                <User size={18} />
-                <span>Área Restrita</span>
-              </Link>
-            )}
           </nav>
         )}
       </div>

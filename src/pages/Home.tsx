@@ -1,8 +1,9 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import Hero from '../components/Hero';
 import ServiceCard from '../components/ServiceCard';
 import Testimonial from '../components/Testimonial';
-import { Wrench, Paintbrush, Car, Shield } from 'lucide-react';
+import { Wrench,   Clock, Trophy, Phone } from 'lucide-react';
 
 const Home: React.FC = () => {
   const services = [
@@ -43,95 +44,147 @@ const Home: React.FC = () => {
       imageUrl: "/Capturar3carro_grande.PNG"  // Imagem na pasta public
     }
   ];
+
   
   return (
-    <main>
+    <main className="overflow-x-hidden">
       <Hero />
       
       {/* Services Section */}
-      <section id="services" className="py-16">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center text-blue-900 mb-4">
+      <section id="services" className="py-20">
+        <motion.div 
+          className="container mx-auto px-4"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+        >
+          <h2 className="text-4xl font-bold text-center text-blue-900 mb-4">
             Nossos Serviços
           </h2>
-          <p className="text-gray-600 text-center max-w-3xl mx-auto mb-12">
+          <div className="w-24 h-1 bg-blue-600 mx-auto mb-8"></div>
+          <p className="text-gray-600 text-center max-w-3xl mx-auto mb-16">
             Oferecemos uma ampla gama de serviços de funilaria e pintura para atender às necessidades do seu veículo.
           </p>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {services.map((service) => (
-              <ServiceCard 
+            {services.map((service, index) => (
+              <motion.div
                 key={service.id}
-                title={service.title}
-                description={service.description}
-                imageUrl={service.imageUrl}  // Usando o caminho relativo
-              />
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                viewport={{ once: true }}
+              >
+                <ServiceCard 
+                  title={service.title}
+                  description={service.description}
+                  imageUrl={service.imageUrl}
+                />
+              </motion.div>
             ))}
+          </div>
+        </motion.div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-16 bg-gradient-to-r from-blue-900 to-blue-800">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <motion.div
+              className="text-center text-white"
+              whileInView={{ scale: [0.9, 1], opacity: [0, 1] }}
+              transition={{ duration: 0.5 }}
+              viewport={{ once: true }}
+            >
+              <div className="text-5xl font-bold mb-2">15+</div>
+              <div className="text-xl">Anos de Experiência</div>
+            </motion.div>
+            <motion.div
+              className="text-center text-white"
+              whileInView={{ scale: [0.9, 1], opacity: [0, 1] }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              viewport={{ once: true }}
+            >
+              <div className="text-5xl font-bold mb-2">2000+</div>
+              <div className="text-xl">Clientes Satisfeitos</div>
+            </motion.div>
+            <motion.div
+              className="text-center text-white"
+              whileInView={{ scale: [0.9, 1], opacity: [0, 1] }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              viewport={{ once: true }}
+            >
+              <div className="text-5xl font-bold mb-2">5000+</div>
+              <div className="text-xl">Serviços Realizados</div>
+            </motion.div>
           </div>
         </div>
       </section>
       
-      {/* Service Description */}
-      <section className="py-16 bg-blue-900 text-white">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">
-            Descrição dos Serviços
+      {/* Service Description with Animation */}
+      <section className="py-20 bg-blue-900 text-white">
+        <motion.div 
+          className="container mx-auto px-4"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+        >
+          <h2 className="text-4xl font-bold text-center mb-16">
+            Por que nos escolher?
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-            <div className="space-y-8">
-              <div className="flex items-start space-x-4">
-                <div className="bg-blue-800 p-3 rounded-lg">
-                  <Wrench size={24} />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+            {[
+              { icon: <Wrench size={24} />, title: 'Profissionais Especializados', text: 'Nossa equipe é altamente treinada e certificada.' },
+              { icon: <Clock size={24} />, title: 'Agilidade', text: 'Entrega rápida sem comprometer a qualidade.' },
+              { icon: <Trophy size={24} />, title: 'Qualidade Garantida', text: 'Garantia em todos os serviços realizados.' },
+            ].map((item, index) => (
+              <motion.div
+                key={index}
+                className="bg-blue-800/50 p-6 rounded-lg hover:bg-blue-800 transition-all duration-300"
+                whileHover={{ y: -10 }}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.2 }}
+                viewport={{ once: true }}
+              >
+                <div className="bg-blue-700 p-3 rounded-lg w-fit mb-4">
+                  {item.icon}
                 </div>
-                <div>
-                  <h3 className="text-xl font-bold mb-2">Funilaria Profissional</h3>
-                  <p>
-                    Nossa equipe de funileiros altamente qualificados utiliza técnicas modernas e equipamentos de ponta para reparar amassados, trincas e outros danos à carroceria do seu veículo. Trabalhamos com todos os tipos de materiais, garantindo um acabamento perfeito.
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex items-start space-x-4">
-                <div className="bg-blue-800 p-3 rounded-lg">
-                  <Paintbrush size={24} />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold mb-2">Pintura Automotiva</h3>
-                  <p>
-                    Utilizamos tintas de alta qualidade e cabines de pintura modernas para garantir um acabamento impecável. Nossa equipe é especializada em combinar cores com precisão, assegurando que os reparos sejam imperceptíveis.
-                  </p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="space-y-8">
-              <div className="flex items-start space-x-4">
-                <div className="bg-blue-800 p-3 rounded-lg">
-                  <Car size={24} />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold mb-2">Polimento e Cristalização</h3>
-                  <p>
-                    Devolvemos o brilho original à pintura do seu veículo com nossos serviços de polimento e cristalização. Removemos riscos superficiais, manchas e imperfeições, deixando seu carro com aparência de novo.
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex items-start space-x-4">
-                <div className="bg-blue-800 p-3 rounded-lg">
-                  <Shield size={24} />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold mb-2">Garantia de Qualidade</h3>
-                  <p>
-                    Todos os nossos serviços possuem garantia. Utilizamos materiais de primeira linha e técnicas avançadas para assegurar a durabilidade e qualidade dos reparos realizados em seu veículo.
-                  </p>
-                </div>
-              </div>
-            </div>
+                <h3 className="text-xl font-bold mb-3">{item.title}</h3>
+                <p>{item.text}</p>
+              </motion.div>
+            ))}
           </div>
-        </div>
+        </motion.div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 bg-blue-50">
+        <motion.div 
+          className="container mx-auto px-4 text-center"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+        >
+          <h2 className="text-4xl font-bold text-blue-900 mb-6">
+            Pronto para transformar seu veículo?
+          </h2>
+          <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
+            Entre em contato conosco hoje mesmo e faça um orçamento gratuito.
+          </p>
+          <motion.button
+            className="bg-blue-900 text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-blue-800 transition-colors flex items-center justify-center mx-auto space-x-2"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Phone size={20} />
+            <span>Agende uma Avaliação</span>
+          </motion.button>
+        </motion.div>
       </section>
       
       <Testimonial />
