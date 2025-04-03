@@ -1,59 +1,72 @@
-import React from 'react';
-import { Calendar, Clock, User, Phone, Car, Wrench, DollarSign, FileText } from 'lucide-react';
+import React, { useState } from 'react';
+import { User, Car, Wrench, FileText, ChevronDown } from 'lucide-react';
 import { useAppointmentForm } from '../hooks/useAppointmentForm';
+import { motion } from 'framer-motion';
 
 const Appointment: React.FC = () => {
-  const {
-    formData,
-    handleChange,
-    handleSubmit,
-    isSubmitting,
-    success,
-    errorMessage,
-    availableTimes,
-    minDate,
-    services,
-    bookedTimes
-  } = useAppointmentForm();
+  const { formData, handleChange, services } = useAppointmentForm();
+  const [showOtherService, setShowOtherService] = useState(false);
+  const [customService, setCustomService] = useState('');
 
-  if (success) {
-    return (
-      <div className="min-h-screen bg-gray-100 py-16">
-        <div className="container mx-auto px-4">
-          <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-8">
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-6">
-                <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                </svg>
-              </div>
-              <h2 className="text-2xl font-bold text-blue-900 mb-2">Agendamento Realizado com Sucesso!</h2>
-              <p className="text-gray-600 mb-6">
-                Obrigado por agendar seu serviço conosco. Em breve entraremos em contato para confirmar os detalhes.
-              </p>
-              <p className="text-sm text-gray-500">Redirecionando para a página inicial...</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const filteredServices = [
+    ...services.reduce((acc, service) => {
+      if (service.name.toLowerCase().includes('polimento')) {
+        if (!acc.has('polimento')) {
+          acc.set('polimento', { id: 'polimento', name: 'Polimento' });
+        }
+      } else {
+        acc.set(service.id, { id: service.id, name: service.name });
+      }
+      return acc;
+    }, new Map()).values(),
+    { id: 'outro', name: 'Outro Serviço' }
+  ];
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const serviceText = showOtherService ? customService : formData.service;
+    const message = `Olá, meu nome é ${formData.clientName}. Gostaria de realizar um orçamento referente ao meu carro ${formData.vehicleBrand} ${formData.vehicleModel} (${formData.vehicleYear}) para o serviço de ${serviceText}. Observações: ${formData.notes || 'Nenhuma'}.`;
+
+    const whatsappUrl = `https://wa.me/5511967970445?text=${encodeURIComponent(message)}`;
+    window.location.href = whatsappUrl;
+  };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-12">
-      <div className="container mx-auto px-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-100 py-6 px-4 sm:py-12">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="container mx-auto max-w-4xl"
+      >
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-3xl font-bold text-blue-900 mb-2 text-center">Agendar Serviço</h1>
-          <p className="text-gray-600 text-center mb-8">
-            Preencha o formulário abaixo para agendar seu serviço na FunilaTOP
-          </p>
-          <div className="bg-white rounded-lg shadow-md p-8">
-            <form onSubmit={handleSubmit}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <motion.h1 
+            initial={{ scale: 0.9 }}
+            animate={{ scale: 1 }}
+            className="text-4xl font-bold text-blue-900 mb-2 text-center"
+          >
+            Agendar Serviço
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="text-gray-600 text-center mb-8"
+          >
+            Preencha o formulário abaixo para agendar seu serviço na Sampaio Funilaria
+          </motion.p>
+          <motion.div 
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-xl p-6 sm:p-8 border border-white/20"
+          >
+            <form onSubmit={handleSubmit} className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
                 {/* Nome Completo */}
-                <div>
-                  <label htmlFor="clientName" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                    <User size={16} className="mr-1" />
+                <motion.div whileHover={{ scale: 1.01 }} className="transition-all duration-200">
+                  <label htmlFor="clientName" className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                    <User size={18} className="mr-2 text-blue-600" />
                     Nome Completo
                   </label>
                   <input
@@ -63,31 +76,15 @@ const Appointment: React.FC = () => {
                     required
                     value={formData.clientName}
                     onChange={handleChange}
-                    className="w-full rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full rounded-xl border border-gray-300 py-3 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="Seu nome completo"
                   />
-                </div>
-                {/* Telefone / WhatsApp */}
-                <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                    <Phone size={16} className="mr-1" />
-                    Telefone / WhatsApp
-                  </label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    required
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className="w-full rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="(00) 00000-0000"
-                  />
-                </div>
+                </motion.div>
+
                 {/* Veículo: Marca */}
-                <div>
-                  <label htmlFor="vehicleBrand" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                    <Car size={16} className="mr-1" />
+                <motion.div whileHover={{ scale: 1.01 }} className="transition-all duration-200">
+                  <label htmlFor="vehicleBrand" className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                    <Car size={18} className="mr-2 text-blue-600" />
                     Marca
                   </label>
                   <input
@@ -97,14 +94,15 @@ const Appointment: React.FC = () => {
                     required
                     value={formData.vehicleBrand}
                     onChange={handleChange}
-                    className="w-full rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full rounded-xl border border-gray-300 py-3 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="Marca"
                   />
-                </div>
+                </motion.div>
+
                 {/* Veículo: Modelo */}
-                <div>
-                  <label htmlFor="vehicleModel" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                    <Car size={16} className="mr-1" />
+                <motion.div whileHover={{ scale: 1.01 }} className="transition-all duration-200">
+                  <label htmlFor="vehicleModel" className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                    <Car size={18} className="mr-2 text-blue-600" />
                     Modelo
                   </label>
                   <input
@@ -114,14 +112,15 @@ const Appointment: React.FC = () => {
                     required
                     value={formData.vehicleModel}
                     onChange={handleChange}
-                    className="w-full rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full rounded-xl border border-gray-300 py-3 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="Modelo"
                   />
-                </div>
+                </motion.div>
+
                 {/* Veículo: Ano */}
-                <div>
-                  <label htmlFor="vehicleYear" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                    <Car size={16} className="mr-1" />
+                <motion.div whileHover={{ scale: 1.01 }} className="transition-all duration-200">
+                  <label htmlFor="vehicleYear" className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                    <Car size={18} className="mr-2 text-blue-600" />
                     Ano
                   </label>
                   <input
@@ -131,154 +130,115 @@ const Appointment: React.FC = () => {
                     required
                     value={formData.vehicleYear}
                     onChange={handleChange}
-                    className="w-full rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full rounded-xl border border-gray-300 py-3 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="Ano"
                   />
-                </div>
-                {/* Veículo: Cor */}
-                <div>
-                  <label htmlFor="vehicleColor" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                    <Car size={16} className="mr-1" />
-                    Cor
-                  </label>
-                  <input
-                    type="text"
-                    id="vehicleColor"
-                    name="vehicleColor"
-                    required
-                    value={formData.vehicleColor}
-                    onChange={handleChange}
-                    className="w-full rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Cor"
-                  />
-                </div>
-                {/* Serviço */}
-                <div>
-                  <label htmlFor="service" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                    <Wrench size={16} className="mr-1" />
+                </motion.div>
+
+                {/* Serviço - Updated version */}
+                <motion.div 
+                  whileHover={{ scale: 1.01 }} 
+                  className="transition-all duration-200 md:col-span-2"
+                >
+                  <label htmlFor="service" className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                    <Wrench size={18} className="mr-2 text-blue-600" />
                     Serviço
                   </label>
-                  <select
-                    id="service"
-                    name="service"
-                    required
-                    value={formData.service}
-                    onChange={handleChange}
-                    className="w-full rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    {services.map(service => (
-                      <option key={service.id} value={service.name}>
-                        {service.name} (R$ {service.price.toFixed(2)})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                {/* Preço (somente leitura) */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                    <DollarSign size={16} className="mr-1" />
-                    Preço
-                  </label>
-                  <input
-                    type="text"
-                    readOnly
-                    value={`R$ ${formData.price.toFixed(2)}`}
-                    className="w-full rounded-md border border-gray-300 py-2 px-3 bg-gray-100"
-                  />
-                </div>
-                {/* Data */}
-                <div>
-                  <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                    <Calendar size={16} className="mr-1" />
-                    Data
-                  </label>
-                  <input
-                    type="date"
-                    id="date"
-                    name="date"
-                    required
-                    min={minDate}
-                    value={formData.date}
-                    onChange={handleChange}
-                    className="w-full rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-                {/* Horário */}
-                <div>
-                  <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                    <Clock size={16} className="mr-1" />
-                    Horário
-                  </label>
-                  <select
-                    id="time"
-                    name="time"
-                    required
-                    value={formData.time}
-                    onChange={handleChange}
-                    className="w-full rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    <option value="">Selecione um horário</option>
-                    {availableTimes.map(time => (
-                      <option key={time} value={time} disabled={bookedTimes.includes(time)}>
-                        {time} {bookedTimes.includes(time) ? ' - Indisponível' : ''}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                  <div className="relative">
+                    <select
+                      id="service"
+                      name="service"
+                      required={!showOtherService}
+                      value={formData.service}
+                      onChange={(e) => {
+                        const isOther = e.target.value === 'Outro Serviço';
+                        setShowOtherService(isOther);
+                        if (!isOther) {
+                          handleChange(e);
+                          setCustomService('');
+                        }
+                      }}
+                      className="w-full rounded-xl border border-gray-300 py-3.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 appearance-none bg-white shadow-sm"
+                    >
+                      <option value="">Selecione um serviço</option>
+                      {filteredServices.map(service => (
+                        <option key={service.id} value={service.name}>
+                          {service.name}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4">
+                      <ChevronDown className="h-5 w-5 text-gray-400" />
+                    </div>
+                  </div>
+                  
+                  {showOtherService && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="mt-3"
+                    >
+                      <input
+                        type="text"
+                        name="customService"
+                        required
+                        value={customService}
+                        onChange={(e) => {
+                          setCustomService(e.target.value);
+                          handleChange({
+                            ...e,
+                            target: {
+                              ...e.target,
+                              name: 'service',
+                              value: e.target.value
+                            }
+                          });
+                        }}
+                        className="w-full rounded-xl border border-gray-300 py-3.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                        placeholder="Descreva o serviço desejado"
+                      />
+                    </motion.div>
+                  )}
+                </motion.div>
               </div>
-              {/* Observações */}
-              <div className="mb-6">
-                <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                  <FileText size={16} className="mr-1" />
+
+              {/* Observações - Updated version */}
+              <motion.div 
+                whileHover={{ scale: 1.01 }} 
+                className="transition-all duration-200 md:col-span-2"
+              >
+                <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                  <FileText size={18} className="mr-2 text-blue-600" />
                   Observações (opcional)
                 </label>
                 <textarea
                   id="notes"
                   name="notes"
-                  rows={3}
+                  rows={4}
                   value={formData.notes}
                   onChange={handleChange}
-                  className="w-full rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full rounded-xl border border-gray-300 py-3.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none shadow-sm"
                   placeholder="Informações adicionais sobre o serviço..."
                 ></textarea>
-              </div>
-              {/* Informações de Pagamento */}
-              <div className="bg-blue-50 p-4 rounded-md mb-6">
-                <h3 className="text-sm font-medium text-blue-900 mb-2 flex items-center">
-                  <DollarSign size={16} className="mr-1" />
-                  Informações de Pagamento
-                </h3>
-                <p className="text-sm text-blue-800">
-                  O pagamento será feito presencialmente após a realização do serviço. Aceitamos dinheiro, PIX, cartões de crédito e débito.
-                </p>
-              </div>
-              {/* Mensagem de erro */}
-              {errorMessage && (
-                <div className="mb-4 text-red-600 text-center">{errorMessage}</div>
-              )}
-              <div className="flex justify-center">
+              </motion.div>
+
+              <motion.div 
+                className="flex justify-center pt-4"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
                 <button
                   type="submit"
-                  disabled={isSubmitting}
-                  className="bg-blue-900 hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-70 transition-colors"
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-4 px-10 rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:shadow-lg hover:shadow-blue-500/25 w-full sm:w-auto"
                 >
-                  {isSubmitting ? (
-                    <span className="flex items-center">
-                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Processando...
-                    </span>
-                  ) : (
-                    'Confirmar Agendamento'
-                  )}
+                  Confirmar Agendamento
                 </button>
-              </div>
+              </motion.div>
             </form>
-          </div>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

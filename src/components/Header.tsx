@@ -27,7 +27,7 @@ const Header: React.FC = () => {
         <div className="flex justify-between items-center">
           <Link to="/" className="flex items-center space-x-2" onClick={closeMenu}>
             <Car size={28} className="text-white" />
-            <span className="text-xl font-bold">FunilaTOP</span>
+            <span className="text-xl font-bold">Sampaio Funilaria</span>
           </Link>
 
           {/* Desktop Navigation */}

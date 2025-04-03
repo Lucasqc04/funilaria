@@ -17,7 +17,7 @@ const Testimonial: React.FC = () => {
           </div>
           
           <blockquote className="text-xl text-center text-gray-700 italic mb-6">
-            "Fiquei impressionado com o serviço da FunilaTOP. Meu carro estava com vários amassados após um acidente, e eles conseguiram deixá-lo como novo. O atendimento foi excelente, o prazo foi cumprido e o preço foi justo. Recomendo a todos que precisam de serviços de funilaria de qualidade."
+            "Fiquei impressionado com o serviço da Sampaio Funilaria. Meu carro estava com vários amassados após um acidente, e eles conseguiram deixá-lo como novo. O atendimento foi excelente, o prazo foi cumprido e o preço foi justo. Recomendo a todos que precisam de serviços de funilaria de qualidade."
           </blockquote>
           
           <div className="text-center">

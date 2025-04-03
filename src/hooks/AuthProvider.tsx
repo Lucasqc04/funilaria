@@ -43,7 +43,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const mockUser: MockUser = {
         uid: "mock-user-id",
         email,
-        displayName: "Admin FunilaTOP",
+        displayName: "Admin Sampaio Funilaria",
         emailVerified: true
       };
       setUser(mockUser);

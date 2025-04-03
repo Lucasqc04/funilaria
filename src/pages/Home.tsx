@@ -10,34 +10,40 @@ const Home: React.FC = () => {
       id: 1,
       title: 'Polimento de Carro Pequeno',
       description: 'Polimento completo para carros de pequeno porte, removendo riscos superficiais e devolvendo o brilho original à pintura.',
+      imageUrl: "/capturar_fusca.png"  // Imagem na pasta public
     },
     {
       id: 2,
       title: 'Polimento de Carro Grande',
       description: 'Serviço de polimento especializado para veículos de grande porte, com tratamento detalhado para cada área da carroceria.',
+      imageUrl: "/Capturar3carro_grande.PNG"  // Imagem na pasta public
     },
     {
       id: 3,
       title: 'Funilaria Completa',
       description: 'Reparos estruturais e estéticos para veículos com danos mais severos, incluindo substituição de peças e alinhamento.',
+      imageUrl: "/capturar_fusca.png"  // Imagem na pasta public
     },
     {
       id: 4,
       title: 'Reparo de Amassados',
       description: 'Técnica especializada para remoção de amassados sem afetar a pintura original do veículo, ideal para pequenos danos.',
+      imageUrl: "/Capturar3carro_grande.PNG"  // Imagem na pasta public
     },
     {
       id: 5,
       title: 'Pintura Parcial',
       description: 'Serviço de pintura para partes específicas do veículo, garantindo perfeita combinação com a cor original.',
+      imageUrl: "/capturar_fusca.png"  // Imagem na pasta public
     },
     {
       id: 6,
       title: 'Pintura Completa',
       description: 'Renovação total da pintura do veículo, incluindo preparação da superfície, aplicação de primer e acabamento de alta qualidade.',
+      imageUrl: "/Capturar3carro_grande.PNG"  // Imagem na pasta public
     }
   ];
-
+  
   return (
     <main>
       <Hero />
@@ -58,6 +64,7 @@ const Home: React.FC = () => {
                 key={service.id}
                 title={service.title}
                 description={service.description}
+                imageUrl={service.imageUrl}  // Usando o caminho relativo
               />
             ))}
           </div>
